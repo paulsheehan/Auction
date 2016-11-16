@@ -50,10 +50,53 @@ public class Client implements Runnable{
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+//		// TODO Auto-generated method stub
+//		while (thread != null){
+//			 try {
+//				//String message = chatName + " > " + console.readLine();
+//				String message = console.readLine();
+//				streamOut.writeUTF(message);
+//	            streamOut.flush();
+//	         }
+//	         catch(IOException ioe)
+//	         {  
+//	        	System.out.println("Sending error: " + ioe.getMessage());
+//	            stop();
+//	         }
+//	      }
+
 		
 	}
 	
+	public void handle(String msg)
+	{  
+		if (msg.equals(".bye"))
+	    {  
+			System.out.println("Good bye. Press RETURN to exit ...");
+	        stop();
+	    }
+	    else
+	        System.out.println(msg);
+	}
+
+	
+	public void stop() {
+		// TODO Auto-generated method stub
+		try
+	      {  if (console   != null)  console.close();
+	         if (streamOut != null)  streamOut.close();
+	         if (socket    != null)  socket.close();
+	      }
+	      catch(IOException ioe)
+	      {
+			  System.out.println("Error closing ...");
+
+	      }
+	      client.close();
+	      thread = null;
+
+	}
+
 	public static void main(String args[]) {
 		
 		Client client = null;

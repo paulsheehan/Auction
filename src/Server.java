@@ -10,6 +10,8 @@ public class Server implements Runnable {
 	private ServerThread clients[] = new ServerThread[50];
 	private int clientCount = 0;
 	
+	
+	//connects to post that was passed in cwd
 	public Server(int port)
 	{
 		try {
@@ -23,12 +25,13 @@ public class Server implements Runnable {
 	    	System.out.println("Can not bind to port " + port + ": " + ioe.getMessage());
 	    }
 	}
-
 	
+	//creates a tread
 	public void start() {
 		// TODO Auto-generated method stub
 		if (thread == null) {
 			  thread = new Thread(this);
+			  //calls run()
 	          thread.start();
 	       }
 
@@ -37,39 +40,33 @@ public class Server implements Runnable {
 	public void stop() {
 		thread = null;
 	}
-
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		while (thread != null)
-	      {
-			 try{
-
-				System.out.println("Waiting for a client ...");
-	            try {
-					addThread(server.accept());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				int pause = (int)(Math.random()*3000);
-				Thread.sleep(pause);
-
-	         }
-	         catch (InterruptedException e){
-			 	System.out.println(e);
-			 }
-	      }
-
-	}
 	
+	   private int findClient(int ID)
+	   {
+		   for (int i = 0; i < clientCount; i++)
+	         if(clients[i].getID() == ID)
+	            return i;
+		   return -1;
+	   }
+	   
+	   public synchronized void broadcast(String input)
+	   {
+	         for (int i = 0; i < clientCount; i++)
+	         {
+	        	 clients[i].send(input); // sends messages to clients
+			 }
+	         
+	         notifyAll();
+	   }
+	
+	//adds thread for the client
 	private void addThread(Socket socket)
 	   {
+		//max 50 clients
 		  if (clientCount < clients.length){
 
 			 System.out.println("Client accepted: " + socket);
+			 //new server thread for client
 	         clients[clientCount] = new ServerThread(this, socket);
 	         try{
 				clients[clientCount].open();
@@ -83,8 +80,59 @@ public class Server implements Runnable {
 	      else
 	         System.out.println("Client refused: maximum " + clients.length + " reached.");
 	   }
+	   
+	   public synchronized void remove(int ID)
+	   {
+		  int pos = findClient(ID);
+	      if (pos >= 0){
+			 ServerThread toTerminate = clients[pos];
+	         System.out.println("Removing client thread " + ID + " at " + pos);
 
-	
+	         if (pos < clientCount-1)
+	            for (int i = pos+1; i < clientCount; i++)
+	               clients[i-1] = clients[i];
+	         clientCount--;
+
+	         try{
+				 toTerminate.close();
+		     }
+	         catch(IOException ioe)
+	         {
+				 System.out.println("Error closing thread: " + ioe);
+			 }
+			 toTerminate = null;
+			 System.out.println("Client " + pos + " removed");
+			 notifyAll();
+	      }
+	   }
+	   
+	   @Override
+		public void run() {
+			// TODO Auto-generated method stub
+			//continues until thread is closed
+		    
+			while (thread != null)
+		      {
+				 try{
+					System.out.println("Waiting for a client ...");
+		            try {
+						addThread(server.accept());
+						this.broadcast("I Love You.");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					int pause = (int)(Math.random()*3000);
+					Thread.sleep(pause);
+
+		         }
+		         catch (InterruptedException e){
+				 	System.out.println(e);
+				 }
+		      }
+
+		}
 	public static void main(String args[]) {
 		
 		System.out.println("I love you");

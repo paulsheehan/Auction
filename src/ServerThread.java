@@ -12,7 +12,8 @@ public class ServerThread extends Thread{
 	private Socket socket = null;
 	private DataInputStream streamIn = null;
 	private DataOutputStream streamOut = null;
-
+	private Thread thread;
+	
 	public ServerThread(Server _server, Socket _socket)
 	{
 		super();
@@ -21,6 +22,27 @@ public class ServerThread extends Thread{
 	    ID = socket.getPort();
 
 	}
+	
+	public int getID()
+	{
+		return ID;
+	}
+	
+	public void send(String msg)
+	{
+		try
+		{
+			streamOut.writeUTF(msg);
+	        streamOut.flush();
+	    }
+		catch(IOException ioe)
+		{
+			System.out.println(ID + " ERROR sending: " + ioe.getMessage());
+	        server.remove(ID);
+	        thread=null;
+	    }
+	}
+	
 
 	public void open() throws IOException
 	{
@@ -38,6 +60,30 @@ public class ServerThread extends Thread{
 		   streamIn.close();
 	   if (streamOut != null)
 		   streamOut.close();
+	}
+	
+	public void run()
+	{
+		System.out.println("Server Thread " + ID + " running.");
+		  thread = new Thread(this);
+	      while (true){
+			 try{
+				 server.broadcast(streamIn.readUTF());
+
+	         	 int pause = (int)(Math.random()*3000);
+			 	 Thread.sleep(pause);
+			 }
+			 catch (InterruptedException e)
+			 {
+			 	System.out.println(e);
+			 }
+	         catch(IOException ioe){
+				//System.out.println(ID + " ERROR reading: " + ioe.getMessage());
+	            server.remove(ID);
+	            thread = null;
+	         }
+	      }
+		
 	}
 	   
 }
