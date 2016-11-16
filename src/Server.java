@@ -37,8 +37,8 @@ public class Server implements Runnable {
 		timer = new Timer();
 	}
 	
-	private void newBid() {
-		timer.updateRemainingTime();
+	private void newBidder() {
+		timer.updateEndTime();
 	}
 	
 	//creates a tread
@@ -141,7 +141,8 @@ public class Server implements Runnable {
 		            try {
 						addThread(server.accept());
 						//Send message to newly connected client
-						this.broadcastToClient(items.getFirst().toString());
+						this.broadcastToClient(items.getFirst().toString() + " " + timer.getTimeRemaining());
+						newBidder();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
