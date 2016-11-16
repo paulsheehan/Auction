@@ -68,7 +68,7 @@ public class ServerThread extends Thread{
 		  thread = new Thread(this);
 	      while (true){
 			 try{
-				 server.broadcast(streamIn.readUTF());
+				 server.broadcastToAllClients(streamIn.readUTF());
 
 	         	 int pause = (int)(Math.random()*3000);
 			 	 Thread.sleep(pause);

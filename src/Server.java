@@ -1,15 +1,20 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
 
 public class Server implements Runnable {
 	
 	private Thread thread = null;
 	private ServerSocket server = null;
+	private Timer timer = null;
+	
 	// Array of clients	
 	private ServerThread clients[] = new ServerThread[50];
+	//number of clients connected to the server
 	private int clientCount = 0;
-	
+	//list of items
+	private static LinkedList<Item> items = new LinkedList<Item>();
 	
 	//connects to post that was passed in cwd
 	public Server(int port)
@@ -18,12 +23,22 @@ public class Server implements Runnable {
 				System.out.println("Binding to port " + port + ", please wait  ...");
 	        	server = new ServerSocket(port);
 	        	System.out.println("Server started: " + server.getInetAddress());
+	        	startAuction();
 	        	start();
 	        }
 	    catch(IOException ioe)
 	    {
 	    	System.out.println("Can not bind to port " + port + ": " + ioe.getMessage());
 	    }
+	}
+	
+	private void startAuction() {
+		// TODO Auto-generated method stub
+		timer = new Timer();
+	}
+	
+	private void newBid() {
+		timer.updateRemainingTime();
 	}
 	
 	//creates a tread
@@ -49,7 +64,7 @@ public class Server implements Runnable {
 		   return -1;
 	   }
 	   
-	   public synchronized void broadcast(String input)
+	   public synchronized void broadcastToAllClients(String input)
 	   {
 	         for (int i = 0; i < clientCount; i++)
 	         {
@@ -58,6 +73,14 @@ public class Server implements Runnable {
 	         
 	         notifyAll();
 	   }
+	   
+	   public synchronized void broadcastToClient(String input)
+	   {
+		   clients[clientCount-1].send(input); // sends messages to clients
+		   
+		   notify();
+	   }
+	   
 	
 	//adds thread for the client
 	private void addThread(Socket socket)
@@ -117,7 +140,8 @@ public class Server implements Runnable {
 					System.out.println("Waiting for a client ...");
 		            try {
 						addThread(server.accept());
-						this.broadcast("I Love You.");
+						//Send message to newly connected client
+						this.broadcastToClient(items.getFirst().toString());
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -133,9 +157,10 @@ public class Server implements Runnable {
 		      }
 
 		}
+	   
 	public static void main(String args[]) {
 		
-		System.out.println("I love you");
+		items.add(new Item("Keyboard", 1.0f, "HP"));
 		
 		Server server = null;
 	    if (args.length != 1) {
