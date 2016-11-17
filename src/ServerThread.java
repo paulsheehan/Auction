@@ -90,7 +90,7 @@ public class ServerThread extends Thread{
 	            break;
 	        }
 	        case "help":  {
-	        	//msg = write help page
+	        	msg = "Enter a number without currency symbol to place a bid; exit = exit bidding; me = display your purchased items ";
 	        	break;
 	        }
 	        case "me":  {

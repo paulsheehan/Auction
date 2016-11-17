@@ -18,6 +18,9 @@ public class Timer extends Thread{
 	public void run() {
 		while(timeRemaining > 0 && !this.isInterrupted()){
 			timeRemaining = endTime - System.currentTimeMillis();
+			if(timeRemaining % 10000 == 0){
+				s.broadcastToAllClients(timeRemaining + " seconds left to bid");
+			}
 		}
 		s.startAuction();
 	}

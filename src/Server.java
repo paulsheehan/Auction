@@ -36,16 +36,23 @@ public class Server implements Runnable {
 		// TODO Auto-generated method stub
 		
 		//if no bidders then item goes to end of queue
-		if(items.getFirst().getHighestBidder() == null) {
-			//pop un-sold item to end of list
-			items.add(new Item(items.getFirst().getName(), items.getFirst().getPrice(), items.getFirst().getBrand()));
-			items.removeFirst();
+		if(items.isEmpty()) {
+			
+			if(items.getFirst().getHighestBidder() == null) {
+				//pop un-sold item to end of list
+				items.add(new Item(items.getFirst().getName(), items.getFirst().getPrice(), items.getFirst().getBrand()));
+				items.removeFirst();
+			}
+			else{	//remove the sold item
+				this.broadcastToAllClients(items.getFirst().getName() + " sold to" + items.getFirst().getHighestBidder() + " for " + items.getFirst().getPrice());
+				items.removeFirst();
+			}
+			timer = new Timer(this);
+			this.broadcastToAllClients("Next item on sale iiiiiss a " + items.getFirst().toString() + " Remaining time left to bid is " + timer.getTimeRemaining());
 		}
-		else{	//remove the sold item
-			items.removeFirst();
+		else {
+			this.broadcastToAllClients("All items have been sold, the bidding has ended!");
 		}
-		timer = new Timer(this);
-		this.broadcastToAllClients("Next item on sale iiiiiss a " + items.getFirst().toString() + " Remaining time left to bid is " + timer.getTimeRemaining());
 	}
 	
 	public synchronized String newBidder(int bid, String bidder) {
