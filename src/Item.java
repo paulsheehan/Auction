@@ -38,9 +38,7 @@ public class Item {
 	
 	public String toString() {
 		String itemInfo = "";
-		double seconds;
-		seconds = System.currentTimeMillis()/1000.0;
-		itemInfo = getName() + " " + "$" + getPrice() + " " + "by " + getBrand() + " TIME: " + seconds;
+		itemInfo = getName() + " " + "$" + getPrice() + " " + "by " + getBrand();
 		
 		return itemInfo;
 	}

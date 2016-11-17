@@ -13,7 +13,7 @@ public class Client implements Runnable{
 	private DataOutputStream streamOut = null;
 	
 	private ClientThread client = null;
-	private String Name;
+	private String name;
 
 	   
 	public Client(String serverName, int serverPort, String name) {
@@ -21,7 +21,7 @@ public class Client implements Runnable{
 		
 		System.out.println("Establishing connection. Please wait ...");
 
-		  this.Name = name;
+		  this.name = name;
 	      try{
 			 socket = new Socket(serverName, serverPort);
 	         System.out.println("Connected: " + socket);
@@ -50,20 +50,19 @@ public class Client implements Runnable{
 	
 	@Override
 	public void run() {
-//		// TODO Auto-generated method stub
-//		while (thread != null){
-//			 try {
-//				//String message = chatName + " > " + console.readLine();
-//				String message = console.readLine();
-//				streamOut.writeUTF(message);
-//	            streamOut.flush();
-//	         }
-//	         catch(IOException ioe)
-//	         {  
-//	        	System.out.println("Sending error: " + ioe.getMessage());
-//	            stop();
-//	         }
-//	      }
+		// TODO Auto-generated method stub
+		while (thread != null){
+			 try {
+				String message = console.readLine();
+				streamOut.writeUTF(message);
+	            streamOut.flush();
+	         }
+	         catch(IOException ioe)
+	         {  
+	        	System.out.println("Sending error: " + ioe.getMessage());
+	            stop();
+	         }
+	      }
 
 		
 	}

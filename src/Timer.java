@@ -14,17 +14,18 @@ public class Timer extends Thread{
 	}
 	
 	public void run() {
-		while(System.currentTimeMillis() < endTime){
+		while(timeRemaining > 0){
 			timeRemaining = endTime - System.currentTimeMillis();
 		}
 		System.out.println("NEXT BID");
 	}
 	
 	public synchronized void updateEndTime() {
-		endTime = endTime + duration;
+		endTime = System.currentTimeMillis() + duration;
 	}
 	
 	public double getTimeRemaining() {
+		
 		return timeRemaining;
 	}
 }

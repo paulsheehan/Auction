@@ -4,8 +4,8 @@ import java.net.Socket;
 import java.util.LinkedList;
 
 public class Server implements Runnable {
-	
 	private Thread thread = null;
+	private Socket socket = null;
 	private ServerSocket server = null;
 	private Timer timer = null;
 	
@@ -64,8 +64,9 @@ public class Server implements Runnable {
 		   return -1;
 	   }
 	   
-	   public synchronized void broadcastToAllClients(String input)
+	   public synchronized void broadcastToAllClients(String input, int ID)
 	   {
+		   System.out.println(ID);
 	         for (int i = 0; i < clientCount; i++)
 	         {
 	        	 clients[i].send(input); // sends messages to clients
@@ -133,7 +134,6 @@ public class Server implements Runnable {
 		public void run() {
 			// TODO Auto-generated method stub
 			//continues until thread is closed
-		    
 			while (thread != null)
 		      {
 				 try{
@@ -141,13 +141,14 @@ public class Server implements Runnable {
 		            try {
 						addThread(server.accept());
 						//Send message to newly connected client
-						this.broadcastToClient(items.getFirst().toString() + " " + timer.getTimeRemaining());
+						this.broadcastToClient(items.getFirst().toString() + " Remainding time left to bid is " + timer.getTimeRemaining());
 						newBidder();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
+		            
+		            
 					int pause = (int)(Math.random()*3000);
 					Thread.sleep(pause);
 
