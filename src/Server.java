@@ -36,37 +36,36 @@ public class Server implements Runnable {
 		// TODO Auto-generated method stub
 		
 		//if no bidders then item goes to end of queue
-		if(items.isEmpty()) {
-			
-			if(items.getFirst().getHighestBidder() == null) {
-				//pop un-sold item to end of list
-				items.add(new Item(items.getFirst().getName(), items.getFirst().getPrice(), items.getFirst().getBrand()));
-				items.removeFirst();
-			}
-			else{	//remove the sold item
-				this.broadcastToAllClients(items.getFirst().getName() + " sold to" + items.getFirst().getHighestBidder() + " for " + items.getFirst().getPrice());
-				items.removeFirst();
-			}
-			timer = new Timer(this);
-			this.broadcastToAllClients("Next item on sale iiiiiss a " + items.getFirst().toString() + " Remaining time left to bid is " + timer.getTimeRemaining());
+		if(items.getFirst().getHighestBidder() == null) {
+			//pop un-sold item to end of list
+			items.add(new Item(items.getFirst().getName(), items.getFirst().getPrice(), items.getFirst().getBrand()));
+			items.removeFirst();
 		}
-		else {
-			this.broadcastToAllClients("All items have been sold, the bidding has ended!");
+		else{	//remove the sold item
+			this.broadcastToAllClients(items.getFirst().getName() + " sold to" + items.getFirst().getHighestBidder() + " for " + items.getFirst().getPrice());
+			items.removeFirst();
 		}
-	}
+		//start timer
+		timer = new Timer(this);
+		this.broadcastToAllClients("Next item on sale iiiiiss a " + items.getFirst().toString() + " Remaining time left to bid is " + timer.getTimeRemaining());
+		}
 	
+	//on new bid
 	public synchronized String newBidder(int bid, String bidder) {
 		String responce;
 		
+		//if the entered bid is larger than the current bid then set highest price and bidder
 		if(bid > items.getFirst().getPrice()) {
 			items.getFirst().setPrice(bid);
 			items.getFirst().setHighestBidder(bidder);
 			responce = bidder + " is the new higest bidder with " + bid + "!";
-		}else {
+		}else { //or the offered bid is too low
 			responce = "Your bid is too low the highest bid is $" + items.getFirst().getPrice();
 		}
 		
+		//start new timer from 1 minute
 		timer = new Timer(this);
+		//print reminder of the remaining bidding time
 		System.out.println(timer.getTimeRemaining());
 		return responce;
 	}
@@ -96,6 +95,7 @@ public class Server implements Runnable {
 		   return -1;
 	   }
 	   
+	   //send a message to each client
 	   public synchronized void broadcastToAllClients(String input)
 	   {
 	         for (int i = 0; i < clientCount; i++)
@@ -129,6 +129,7 @@ public class Server implements Runnable {
 	         System.out.println("Client refused: maximum " + clients.length + " reached.");
 	   }
 	   
+	//removes a client
 	   public synchronized void remove(int ID)
 	   {
 		  int pos = findClient(ID);
@@ -154,6 +155,7 @@ public class Server implements Runnable {
 	      }
 	   }
 	   
+	   //continuously runs
 	   @Override
 		public void run() {
 			// TODO Auto-generated method stub
@@ -185,6 +187,7 @@ public class Server implements Runnable {
 	   
 	public static void main(String args[]) {
 		
+		//create auction items
 		items.add(new Item("Keyboard", 10.0f, "HP"));
 		items.add(new Item("Raberry Pi", 15.0f, "Element14"));
 		items.add(new Item("4TB External HD", 62.0f, "Seagate"));

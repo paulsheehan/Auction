@@ -70,44 +70,46 @@ public class ServerThread extends Thread{
 		String bidder = msg.substring(0, msg.indexOf(" "));
 		msg = msg.substring(msg.indexOf(" ")+1);
 		
+		//provides different functionality based on the clients command
 		switch (msg) {
-	        case "quit":  {
+	        case "quit":  {	//quit program
 	        	server.remove(ID);
 	            thread = null;
 	            msg = "Press enter to quit";
 	            break;
 	        }
-	        case "bye": { 
+	        case "bye": { //quit program
 	        	server.remove(ID);
 	        	thread = null;
 	        	msg = "Press enter to quit";
 	            break;
 	        }
-	        case "exit": {  
+	        case "exit": {  //quit program
 	        	server.remove(ID);
 	            thread = null;
 	            msg = "Press enter to quit";
 	            break;
 	        }
-	        case "help":  {
+	        case "help":  {	//show commands to user
 	        	msg = "Enter a number without currency symbol to place a bid; exit = exit bidding; me = display your purchased items ";
 	        	break;
 	        }
-	        case "me":  {
+	        case "me":  { //I was going to write a users purchases and total money spent to a file but didn't have time sorry
 	        	//write functionality to print purchased items
 	        	break;
 	        }
 	        default:
+	        	//if the client command is numbers only
 	        	String regex = "\\d+";
 	        	if(msg.matches(regex)) {
 	        		int bid = Integer.parseInt(msg);
 	        		msg = server.newBidder(bid, bidder);
 	        	}
-	        	else{
+	        	else{	//invalid command because the command contains spaces and or letters
 	        		msg = "No such command. Enter a bidding price, or 'help' for list of commands";
 	        	}
 		}
-		
+		//send message to all clients
 		server.broadcastToAllClients(msg);
 	}
 	

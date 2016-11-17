@@ -54,6 +54,7 @@ public class Client implements Runnable{
 		// TODO Auto-generated method stub
 		while (thread != null){
 			 try {
+				 //this is where the client enters a command
 				String message = console.readLine();
 				message = name + " " + message;
 	        		streamOut.writeUTF(message);

@@ -1,4 +1,4 @@
-
+//This is a POJO for each item
 public class Item {
 	
 	private String name;
