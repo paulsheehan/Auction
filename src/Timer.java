@@ -14,14 +14,10 @@ public class Timer extends Thread{
 	}
 	
 	public void run() {
-		while(timeRemaining > 0){
+		while(timeRemaining > 0 && !this.isInterrupted()){
 			timeRemaining = endTime - System.currentTimeMillis();
 		}
-		System.out.println("NEXT BID");
-	}
-	
-	public synchronized void updateEndTime() {
-		endTime = System.currentTimeMillis() + duration;
+		//no bidders
 	}
 	
 	public double getTimeRemaining() {

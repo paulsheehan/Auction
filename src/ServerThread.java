@@ -65,35 +65,50 @@ public class ServerThread extends Thread{
 	}
 	
 	//handles the clients message
-	public void handle(String msg, int ID, Thread thread) {
+	public void handle(String msg, Thread thread) {
+		
+		String bidder = msg.substring(0, msg.indexOf(" "));
+		msg = msg.substring(msg.indexOf(" ")+1);
 		
 		switch (msg) {
-        case "quit":  
-        	server.remove(ID);
-            thread = null;
-                 break;
-        case "bye":  ;
-                 break;
-        case "exit":  ;
-                 break;
-        case "help":  ;
-        break;
-        case "me":  ;
-        break;
-        default:  
-        	String regex = "\\d+";
-    		Pattern pattern = Pattern.compile(regex);
-    		
-        	if(pattern.matcher(msg).matches()){
-        		
-        	}
-        	else {
-        		msg = "No such command. Enter a bidding price, or 'help' for list of commands";
-        	}
-        break;
+	        case "quit":  {
+	        	server.remove(ID);
+	            thread = null;
+	            msg = "Press enter to quit";
+	            break;
+	        }
+	        case "bye": { 
+	        	server.remove(ID);
+	        	thread = null;
+	        	msg = "Press enter to quit";
+	            break;
+	        }
+	        case "exit": {  
+	        	server.remove(ID);
+	            thread = null;
+	            msg = "Press enter to quit";
+	            break;
+	        }
+	        case "help":  {
+	        	//msg = write help page
+	        	break;
+	        }
+	        case "me":  {
+	        	//write functionality to print purchased items
+	        	break;
+	        }
+	        default:
+	        	String regex = "\\d+";
+	        	if(msg.matches(regex)) {
+	        		int bid = Integer.parseInt(msg);
+	        		msg = server.newBidder(bid, bidder);
+	        	}
+	        	else{
+	        		msg = "No such command. Enter a bidding price, or 'help' for list of commands";
+	        	}
 		}
 		
-		server.broadcastToAllClients(msg, ID);
+		server.broadcastToAllClients(msg);
 	}
 	
 	public void run()
@@ -101,21 +116,23 @@ public class ServerThread extends Thread{
 		System.out.println("Server Thread " + ID + " running.");
 		  thread = new Thread(this);
 	      while (true){
-			 try{
 				 //This is where the clients message is received by the server
-				 handle(streamIn.readUTF(), ID, thread);
-
-	         	 int pause = (int)(Math.random()*3000);
-			 	 Thread.sleep(pause);
-			 }
-			 catch (InterruptedException e)
-			 {
-			 	System.out.println(e);
-			 }
-	         catch(IOException ioe){
-	            server.remove(ID);
-	            thread = null;
-	         }
+				 
+					try {
+						handle(streamIn.readUTF(), thread);
+						int pause = (int)(Math.random()*3000);
+					 	 Thread.sleep(pause);
+					} 
+					catch (IOException ioe) {
+						// TODO Auto-generated catch block
+			            //server.remove(ID);
+			            thread = null;
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						System.out.println(e);
+					}
+					
+			 
 	      }
 		
 	}

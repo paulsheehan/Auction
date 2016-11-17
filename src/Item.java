@@ -4,12 +4,12 @@ public class Item {
 	private String name;
 	private float price;
 	private String brand;
+	private String highestBidder;
 	
 	public Item(String name, float price, String brand) {
 		setName(name);
 		setPrice(price);
 		setBrand(brand);
-		
 	}
 	
 	public String getName() {
@@ -42,4 +42,14 @@ public class Item {
 		
 		return itemInfo;
 	}
+
+	public String getHighestBidder() {
+		return highestBidder;
+	}
+
+	public void setHighestBidder(String highestBidder) {
+		this.highestBidder = highestBidder;
+	}
+	
+	
 }

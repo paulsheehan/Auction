@@ -8,6 +8,7 @@ public class Server implements Runnable {
 	private Socket socket = null;
 	private ServerSocket server = null;
 	private Timer timer = null;
+	private String lastBidder;
 	
 	// Array of clients	
 	private ServerThread clients[] = new ServerThread[50];
@@ -37,8 +38,20 @@ public class Server implements Runnable {
 		timer = new Timer();
 	}
 	
-	private void newBidder() {
-		timer.updateEndTime();
+	public synchronized String newBidder(int bid, String bidder) {
+		String responce;
+		
+		if(bid > items.getFirst().getPrice()) {
+			items.getFirst().setPrice(bid);
+			items.getFirst().setHighestBidder(bidder);
+			responce = bidder + " is the new higest bidder with " + bid + "!";
+		}else {
+			responce = "Your bid is too low the highest bid is $" + items.getFirst().getPrice();
+		}
+		
+		timer = new Timer();
+		System.out.println(timer.getTimeRemaining());
+		return responce;
 	}
 	
 	//creates a tread
@@ -58,15 +71,16 @@ public class Server implements Runnable {
 	
 	   private int findClient(int ID)
 	   {
-		   for (int i = 0; i < clientCount; i++)
-	         if(clients[i].getID() == ID)
-	            return i;
+		   for (int i = 0; i < clientCount; i++) {
+			   if(clients[i].getID() == ID){
+			       return i;
+			   }
+		   }
 		   return -1;
 	   }
 	   
-	   public synchronized void broadcastToAllClients(String input, int ID)
+	   public synchronized void broadcastToAllClients(String input)
 	   {
-		   System.out.println(ID);
 	         for (int i = 0; i < clientCount; i++)
 	         {
 	        	 clients[i].send(input); // sends messages to clients
@@ -142,7 +156,6 @@ public class Server implements Runnable {
 						addThread(server.accept());
 						//Send message to newly connected client
 						this.broadcastToClient(items.getFirst().toString() + " Remainding time left to bid is " + timer.getTimeRemaining());
-						newBidder();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.regex.Pattern;
 
 public class Client implements Runnable{
 	
@@ -54,8 +55,9 @@ public class Client implements Runnable{
 		while (thread != null){
 			 try {
 				String message = console.readLine();
-				streamOut.writeUTF(message);
-	            streamOut.flush();
+				message = name + " " + message;
+	        		streamOut.writeUTF(message);
+		            streamOut.flush();
 	         }
 	         catch(IOException ioe)
 	         {  
