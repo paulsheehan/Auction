@@ -4,7 +4,7 @@ public class Item {
 	private String name;
 	private float price;
 	private String brand;
-	private String highestBidder;
+	private String highestBidder = null;
 	
 	public Item(String name, float price, String brand) {
 		setName(name);

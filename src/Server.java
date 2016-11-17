@@ -8,7 +8,6 @@ public class Server implements Runnable {
 	private Socket socket = null;
 	private ServerSocket server = null;
 	private Timer timer = null;
-	private String lastBidder;
 	
 	// Array of clients	
 	private ServerThread clients[] = new ServerThread[50];
@@ -33,9 +32,20 @@ public class Server implements Runnable {
 	    }
 	}
 	
-	private void startAuction() {
+	public void startAuction() {
 		// TODO Auto-generated method stub
-		timer = new Timer();
+		
+		//if no bidders then item goes to end of queue
+		if(items.getFirst().getHighestBidder() == null) {
+			//pop un-sold item to end of list
+			items.add(new Item(items.getFirst().getName(), items.getFirst().getPrice(), items.getFirst().getBrand()));
+			items.removeFirst();
+		}
+		else{	//remove the sold item
+			items.removeFirst();
+		}
+		timer = new Timer(this);
+		this.broadcastToAllClients("Next item on sale iiiiiss a " + items.getFirst().toString() + " Remaining time left to bid is " + timer.getTimeRemaining());
 	}
 	
 	public synchronized String newBidder(int bid, String bidder) {
@@ -49,7 +59,7 @@ public class Server implements Runnable {
 			responce = "Your bid is too low the highest bid is $" + items.getFirst().getPrice();
 		}
 		
-		timer = new Timer();
+		timer = new Timer(this);
 		System.out.println(timer.getTimeRemaining());
 		return responce;
 	}
@@ -87,13 +97,6 @@ public class Server implements Runnable {
 			 }
 	         
 	         notifyAll();
-	   }
-	   
-	   public synchronized void broadcastToClient(String input)
-	   {
-		   clients[clientCount-1].send(input); // sends messages to clients
-		   
-		   notify();
 	   }
 	   
 	
@@ -155,7 +158,7 @@ public class Server implements Runnable {
 		            try {
 						addThread(server.accept());
 						//Send message to newly connected client
-						this.broadcastToClient(items.getFirst().toString() + " Remainding time left to bid is " + timer.getTimeRemaining());
+						this.broadcastToAllClients(items.getFirst().toString() + " Remaining time left to bid is " + timer.getTimeRemaining());
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -175,7 +178,11 @@ public class Server implements Runnable {
 	   
 	public static void main(String args[]) {
 		
-		items.add(new Item("Keyboard", 1.0f, "HP"));
+		items.add(new Item("Keyboard", 10.0f, "HP"));
+		items.add(new Item("Raberry Pi", 15.0f, "Element14"));
+		items.add(new Item("4TB External HD", 62.0f, "Seagate"));
+		items.add(new Item("Table-Lamp", 14.0f, "Glow"));
+		items.add(new Item("Fitbit Charge 2", 110.0f, "Fitbit"));
 		
 		Server server = null;
 	    if (args.length != 1) {
